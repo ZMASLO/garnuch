@@ -93,7 +93,7 @@ class MemeView(QMainWindow):
         self.connect_slots()
 
     def init_ui(self):
-        self.setWindowTitle("Kwejk")
+        self.setWindowTitle("Garnuch z memami")
         self.setCentralWidget(QWidget())
         self.buttons = QWidget()
         self.controlButtons = QWidget()
@@ -114,17 +114,20 @@ class MemeView(QMainWindow):
         self.controlButtons.setLayout(QHBoxLayout())
         self.display.setLayout(QVBoxLayout())
 
-        self.meme_title = QLabel()
+        self.currentApi = QLabel()
+        self.currentApi.setText('kwejk')
+        self.memeTitle = QLabel()
         self.image = QLabel()
 
-        self.meme_title.setAlignment(Qt.AlignCenter)
+        self.memeTitle.setAlignment(Qt.AlignCenter)
 
         self.buttons.layout().addWidget(self.jbzdyButton)
         self.buttons.layout().addWidget(self.kwejkButton)
 
         self.controlButtons.layout().addWidget(self.load_next_button)
 
-        self.display.layout().addWidget(self.meme_title)
+        self.display.layout().addWidget(self.currentApi)
+        self.display.layout().addWidget(self.memeTitle)
         self.display.layout().addWidget(self.image)
         
         
@@ -135,7 +138,7 @@ class MemeView(QMainWindow):
 
     @pyqtSlot(Meme)
     def meme_loaded(self, meme):
-        self.meme_title.setText(meme.title)
+        self.memeTitle.setText(meme.title)
         self.meme_image = meme.image
         self.pixmap = QPixmap()
         self.pixmap.loadFromData(meme.image)
@@ -152,7 +155,7 @@ class MemeView(QMainWindow):
 
     def changeApi(self, api):
         print(api)
-        self.setWindowTitle(api)
+        self.currentApi.setText(api)
         self.apiAdapter.changeApi(api)
 
     def load_memes(self):
