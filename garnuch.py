@@ -105,6 +105,11 @@ class MemeView(QMainWindow):
         self.centralWidget().layout().addWidget(self.display)
         self.centralWidget().layout().addWidget(self.controlButtons)
 
+        #scroll area section
+        self.imagesWidget = QWidget()
+        self.imagesLayout = QVBoxLayout(self.imagesWidget)
+        self.images = []
+
         self.kwejkButton = QPushButton('Kwejk')
         self.jbzdyButton = QPushButton('Jbzdy')
 
@@ -128,23 +133,47 @@ class MemeView(QMainWindow):
 
         self.display.layout().addWidget(self.currentApi)
         self.display.layout().addWidget(self.memeTitle)
-        self.display.layout().addWidget(self.image)
+        # self.display.layout().addWidget(self.image)
+        # self.images.append(self.memeFactory(self.image))
+        # self.images.append(self.image)
+        # for image in self.images:
+        #     self.imagesLayout.addWidget(image)
         
+        # self.imagesLayout.addWidget(self.image)
+        print('raz')
+        
+        self.scrollArea = QScrollArea()
+        self.scrollArea.setBackgroundRole(QPalette.Dark)
+        self.scrollArea.setWidget(self.imagesWidget)
+        self.display.layout().addWidget(self.scrollArea)
         
         self.display.layout().setAlignment(Qt.AlignCenter)
 
         self.setMinimumSize(300,600)
+        self.scrollAreaHeight = 0
+        self.imagesWidget.setMinimumWidth(self.display.width()-100)
 
 
     @pyqtSlot(Meme)
     def meme_loaded(self, meme):
-        self.memeTitle.setText(meme.title)
-        self.meme_image = meme.image
+        print('cyk')
+        # self.memeTitle.setText(meme.title)
+        # self.meme_image = meme.image
         self.pixmap = QPixmap()
         self.pixmap.loadFromData(meme.image)
-        self.pixmap = self.pixmap.scaled(self.display.width(), self.display.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.image.setPixmap(self.pixmap)
+        self.pixmap = self.pixmap.scaledToWidth(self.display.width()-60)
+        
+        print(self.pixmap.width())
+        print(self.pixmap.height())
+        self.scrollAreaHeight += self.pixmap.height()+25
+        self.imagesWidget.setMinimumHeight(self.scrollAreaHeight)
+        self.imagesLayout.addWidget(self.titleFactory(meme.title))
+        self.imagesLayout.addWidget(self.memeFactory(self.pixmap))
+        
 
+        # self.scrollArea.setWidget(self.imagesWidget)
+        # self.images.append(self.memeFactory(self.pixmap))
+        # self.imagesLayout.addWidget(self.images[0])
 
     def connect_slots(self):
         self.apiAdapter.meme_loaded.connect(self.meme_loaded)
@@ -160,14 +189,26 @@ class MemeView(QMainWindow):
 
     def load_memes(self):
         Thread(target=self.apiAdapter.load_meme).run()
+        # self.apiAdapter.load_meme
 
     def resizeEvent(self, QResizeEvent):
+        print('wywoalnie')
         super().resizeEvent(QResizeEvent)
         if self.meme_image is not None:
             self.pixmap = QPixmap()
             self.pixmap.loadFromData(self.meme_image)
-            self.pixmap = self.pixmap.scaled(self.display.width(), self.display.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            self.image.setPixmap(self.pixmap)
+            self.pixmap = self.pixmap.scaledToWidth(self.display.width()-60)
+            
+
+    def memeFactory(self, image):
+        qlabel = QLabel()
+        qlabel.setPixmap(image)
+        return qlabel
+
+    def titleFactory(self, text):
+        qlabel = QLabel()
+        qlabel.setText(text)
+        return qlabel
 
 def main():
     app = QApplication([])
