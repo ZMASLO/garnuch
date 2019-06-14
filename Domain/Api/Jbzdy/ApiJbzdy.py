@@ -1,8 +1,9 @@
 from bs4 import BeautifulSoup
 from requests import get
+from ..ApiAbstract import ApiAbstract
 from ...Meme.Meme import Meme
 
-class ApiJbzdy():
+class ApiJbzdy(ApiAbstract):
     def __init__(self):
         self.url = 'https://jbzdy.com.pl'
         self.page_number = ''
