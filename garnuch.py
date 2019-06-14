@@ -5,8 +5,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtQml import *
 from threading import Thread
-from Domain.api import *
-from Domain.factory import *
+from Domain.Api.api import *
+from Domain.Factory.QlabelFactory import *
 from Views import *
 import sys
 
@@ -17,8 +17,8 @@ class MemeView(QMainWindow):
         self.apiAdapter = ApiAdapter(self.apiSelected)
         self.meme_image = None
         self.init_ui()
-        self.connect_slots()
-        self.qlabelFactory = qlabelFactory()
+        self.connectSlots()
+        self.qlabelFactory = QlabelFactory()
 
     def init_ui(self):
         self.setWindowTitle("Garnuch z memami")
@@ -81,7 +81,7 @@ class MemeView(QMainWindow):
 
 
     @pyqtSlot(Meme)
-    def meme_loaded(self, meme):
+    def memeLoaded(self, meme):
         self.pixmap = QPixmap()
         self.pixmap.loadFromData(meme.image)
         self.pixmap = self.pixmap.scaledToWidth(self.display.width()-60)
@@ -91,9 +91,9 @@ class MemeView(QMainWindow):
         self.imagesLayout.addWidget(self.qlabelFactory.titleFactory(meme.title))
         self.imagesLayout.addWidget(self.qlabelFactory.memeFactory(self.pixmap))
             
-    def connect_slots(self):
-        self.apiAdapter.meme_loaded.connect(self.meme_loaded)
-        self.load_next_button.clicked.connect(self.load_memes)
+    def connectSlots(self):
+        self.apiAdapter.memeLoaded.connect(self.memeLoaded)
+        self.load_next_button.clicked.connect(self.loadMemes)
         self.jbzdyButton.clicked.connect(lambda:self.changeApi('jbzdy'))
         self.kwejkButton.clicked.connect(lambda:self.changeApi('kwejk'))
         self.testButton.clicked.connect(self.testFunction)
@@ -108,7 +108,7 @@ class MemeView(QMainWindow):
     def endOfBarDetection(self):
         if self.scrollBar.value() == self.scrollBar.maximum():
             # for x in range(5):
-            self.load_memes()
+            self.loadMemes()
 
     def changeApi(self, api):
         print(api)
@@ -117,8 +117,8 @@ class MemeView(QMainWindow):
         self.currentApi.setText(api)
         self.apiAdapter.changeApi(api)
 
-    def load_memes(self):
-        Thread(target=self.apiAdapter.load_meme).run()
+    def loadMemes(self):
+        Thread(target=self.apiAdapter.loadMeme).run()
 
     def resizeEvent(self, QResizeEvent):
         print('wywoalnie')

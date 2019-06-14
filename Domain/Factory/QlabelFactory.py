@@ -2,7 +2,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-class qlabelFactory:
+class QlabelFactory:
     def memeFactory(self, image):
             qlabel = QLabel()
             qlabel.setPixmap(image)
