@@ -12,7 +12,6 @@ class MemeView(QMainWindow):
         super().__init__(*args, **kwargs)
         self.apiSelected = 'kwejk'
         self.apiAdapter = ApiAdapter(self.apiSelected)
-        self.meme_image = None
         self.init_ui()
         self.connectSlots()
         self.qlabelFactory = QlabelFactory()
@@ -30,17 +29,12 @@ class MemeView(QMainWindow):
 
         self.kwejkButton = QPushButton('Kwejk')
         self.jbzdyButton = QPushButton('Jbzdy')
-        self.testButton = QPushButton('test')
 
         self.buttons.setLayout(QHBoxLayout())
         self.display.setLayout(QVBoxLayout())
 
-        self.currentApi = QLabel()
-        self.display.layout().addWidget(self.currentApi)
-        
         self.buttons.layout().addWidget(self.jbzdyButton)
         self.buttons.layout().addWidget(self.kwejkButton)
-        self.buttons.layout().addWidget(self.testButton)
         
         #scroll area section
         self.imagesWidget = QWidget()
@@ -82,9 +76,6 @@ class MemeView(QMainWindow):
     def imagesButtonsConnect(self):
         # add connect button and pass to image
         itemsCount = self.imagesLayout.count()
-        print(itemsCount)
-        # self.imagesLayout.itemAt(itemsCount-2).widget().clicked.connect(lambda:self.imageSave(self.imagesLayout.itemAt(itemsCount-3).widget().pixmap()))
-        # self.imagesLayout.itemAt(itemsCount-1).widget().clicked.connect(lambda:self.imageCopyToClipboard(self.imagesLayout.itemAt(itemsCount-3).widget().pixmap()))
         buttonsWidget = self.imagesLayout.itemAt(itemsCount-1).widget().layout()
         # save button
         buttonsWidget.itemAt(0).widget().clicked.connect(lambda:self.imageSave(self.imagesLayout.itemAt(itemsCount-2).widget().pixmap()))
@@ -95,12 +86,7 @@ class MemeView(QMainWindow):
         self.apiAdapter.memeLoaded.connect(self.memeLoaded)
         self.jbzdyButton.clicked.connect(lambda:self.changeApi('jbzdy'))
         self.kwejkButton.clicked.connect(lambda:self.changeApi('kwejk'))
-        self.testButton.clicked.connect(self.testFunction)
         self.scrollBar.valueChanged.connect(self.endOfBarDetection)
-        
-    def testFunction(self):
-        print('no siema')
-        self.imageCopyToClipboard()
     
     def imageCopyToClipboard(self, image):
         clipboard =  QApplication.clipboard()
@@ -117,13 +103,10 @@ class MemeView(QMainWindow):
             self.loadMemes()
 
     def changeApi(self, api):
-        print(api)
         self.apiAdapter.changeApi(api)
-        self.currentApi.setText(api)
         self.clearLayout(self.imagesLayout)
         self.scrollAreaHeight = 0
         self.scrollBar.setValue(0)
-        self.currentApi.setText(api)
         self.loadMemes()
 
     def loadMemes(self):
