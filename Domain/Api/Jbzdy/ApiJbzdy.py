@@ -11,9 +11,12 @@ class ApiJbzdy():
         page = BeautifulSoup(get(self.url).text, 'html.parser')
         for meme in page.find_all('div', attrs={'class': 'content-info'}):
             self.title = meme.find('div', attrs={'class': 'title'}).text.strip()
-            self.image_url = meme.find('img', attrs={'class': 'resource-image'})['src']
-            self.image = get(self.image_url).content
-            yield Meme(self.title, self.image)
+            try:
+                self.image_url = meme.find('img', attrs={'class': 'resource-image'})['src']
+                self.image = get(self.image_url).content
+                yield Meme(self.title, self.image)
+            except:
+                print('video - skipping it')
 
     def nextPage(self):
         page = get(self.url+'/str/'+self.page_number)
