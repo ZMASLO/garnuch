@@ -5,15 +5,15 @@ from ...Meme.Meme import Meme
 
 class ApiJbzdy(ApiAbstract):
     def __init__(self):
-        self.url = 'https://jbzdy.com.pl'
+        self.url = 'https://jbzd.com.pl'
         self.page_number = ''
 
     def loadMemes(self):
         page = BeautifulSoup(get(self.url).text, 'html.parser')
-        for meme in page.find_all('div', attrs={'class': 'content-info'}):
-            self.title = meme.find('div', attrs={'class': 'title'}).text.strip()
+        for meme in page.find_all('div', attrs={'class': 'article-content'}):
+            self.title = meme.find('h3', attrs={'class': 'article-title'}).text.strip()
             try:
-                self.image_url = meme.find('img', attrs={'class': 'resource-image'})['src']
+                self.image_url = meme.find('img', attrs={'class': 'article-image'})['src']
                 self.image = get(self.image_url).content
                 yield Meme(self.title, self.image)
             except:
@@ -22,6 +22,6 @@ class ApiJbzdy(ApiAbstract):
     def nextPage(self):
         page = get(self.url+'/str/'+self.page_number)
         page = BeautifulSoup(page.text, 'html.parser')
-        nextPageUrl = page.find('div', attrs={'class': 'content pagg'}).find('a', attrs={'class': 'btn-next-page'})['href']
+        nextPageUrl = page.find('div', attrs={'class': 'pagination-buttons'}).find('a', attrs={'class': 'pagination-next'})['href']
         self.url = nextPageUrl
         print('Next page')
